@@ -34,7 +34,17 @@ start:
 # Stop docker-compose
 stop:
 	docker-compose -f docker-compose.yml down
+# worker
+worker:
+	cd src && poetry run python -m app.workers.outbox_worker
+worker-detach:
+	docker-compose up -d outbox_worker
 
+worker-logs:
+	docker-compose logs -f outbox_worker
+
+worker-stop:
+	docker-compose stop outbox_worker
 
 # clean pyc files/dirs
 pyclean:

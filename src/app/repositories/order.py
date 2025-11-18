@@ -27,7 +27,8 @@ class OrderRepository:
         self.session = session
 
     async def get_order_by_id(self, order_id: int) -> Order | None:
-        """Fetch an order by its ID.
+        """
+        Fetch an order by its ID.
 
         Args:
             order_id: The ID of the order to retrieve.
@@ -39,7 +40,8 @@ class OrderRepository:
         return result
 
     async def create_order(self, order_data: dict) -> Order:
-        """Create and persist a new order.
+        """
+        Create and persist a new order.
 
         Args:
             order_data: Dictionary containing order fields (instrument, type, quantity, side, limit_price).
@@ -65,7 +67,8 @@ class OrderRepository:
             raise OrderSaveError("Failed to save order") from exc
 
     async def update_order(self, order_id: int, update_data: dict) -> Order | None:
-        """Update an existing order.
+        """
+        Update an existing order.
 
         Args:
             order_id: The ID of the order to update.

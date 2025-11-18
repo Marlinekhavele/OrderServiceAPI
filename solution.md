@@ -1,5 +1,4 @@
 # OrderServiceAPI
-## Project overview
 A FastAPI service to accept stock orders, persist them, and ensure their eventual placement on an external exchange using the outbox pattern. The application uses the Repository pattern to structure data access and business logic. Poetry is employed for package management, while pyenv is used to manage virtual environments for local testing, providing an alternative to Docker if needed.
 ## Architecture Decision: Why Outbox Pattern?
 Orders and a pending outbox entry are saved in a single DB transaction
@@ -20,7 +19,7 @@ The requirement states: "it is guaranteed that the order **WILL** be placed on t
 
 **Design:**
 1. `POST /orders` persists order and creates a pending outbox entry in the same transaction (atomic).
-2. Endpoint returns 201 immediately no waiting for exchange.
+2. Endpoint returns `201` immediately no waiting for exchange.
 3. Separate worker process polls outbox table every 5 seconds.
 4. Worker fetches pending entries, calls `_place_order_with_retry()`up to 3 attempts with backoff.
 5. On success → outbox entry status = "placed".
@@ -33,6 +32,7 @@ The requirement states: "it is guaranteed that the order **WILL** be placed on t
 - No idempotency duplicate placements if worker retries.
 - Worker is a simple poller not production-ready for high scale.
 
+## Architecture Overview
 ```mermaid
 graph LR
     Client[Client] --> API[API]
@@ -41,50 +41,59 @@ graph LR
     Outbox --> Workers[Workers]
     Workers --> Exchange[Exchange]
 ```
-
-## Project structure
+## Project Structure
 ```
 order-service/
-|
-src/
-├── app/
-│   ├── api/
-│   │   └── endpoints/
-│   │       ├── health.py
-│   │       ├── order.py
-│   │       └── meta.py
-│   ├── database/
-│   │   └── base.py
-│   │   └── session.py
-│   ├── models/
-│   │   ├── order.py
-│   │   └── outbox.py
-│   ├── repositories/
-│   │   └── order.py
-│   ├── schemas/
-│   │   └── enums/
-│   │       └── order.py
-│   │   └── order.py
-│   ├── services/
-│   │   └── order.py
-│   ├── workers/
-│   │   └── outbox_worker.py
-│   ├── exceptions.py
-│   ├── deps.py
-│   ├── main.py
-│   └── settings.py
+├── src/
+│   └── app/
+│       ├── __init__.py
+│       ├── main.py
+│       ├── settings.py
+│       ├── deps.py
+│       ├── exceptions.py
+│       ├── api/
+│       │   ├── __init__.py
+│       │   └── endpoints/
+│       │       ├── __init__.py
+│       │       ├── health.py
+│       │       ├── order.py
+│       │       └── meta.py
+│       ├── database/
+│       │   ├── __init__.py
+│       │   ├── base.py
+│       │   └── session.py
+│       ├── models/
+│       │   ├── __init__.py
+│       │   ├── order.py
+│       │   └── outbox.py
+│       ├── repositories/
+│       │   ├── __init__.py
+│       │   └── order.py
+│       ├── schemas/
+│       │   ├── __init__.py
+│       │   ├── order.py
+│       │   └── enums/
+│       │       ├── __init__.py
+│       │       └── order.py
+│       ├── services/
+│       │   ├── __init__.py
+│       │   └── order.py
+│       └── workers/
+│           ├── __init__.py
+│           └── outbox_worker.py
+├── tests/
+│   ├── __init__.py
+│   └── test_health.py
 ├── migration/
 │   ├── env.py
 │   └── versions/
 │       ├── create_order_table.py
 │       └── create_order_outbox_table.py
-├── tests/
-│   └── health_test.py
 ├── alembic.ini
 ├── pytest.ini
 ├── pyproject.toml
 ├── poetry.lock
-├── readme.md
+├── README.md
 ├── Dockerfile
 ├── docker-compose.yml
 ├── Makefile
@@ -117,7 +126,7 @@ src/
 3. Start app:
    make serve
 4. Start worker separate process on a different terminal:
-   cd src && poetry run python -m app.workers.outbox_worker
+   cd src && poetry run python -m app.workers.outbox_worker | `make worker`
 5. Tests
     make test migrate-local
 6. Coverage
@@ -137,11 +146,11 @@ Files used:
 ## Improvements
 - Replace polling worker with a message broker like kafka  or use transactional outbox + CDC for higher throughput.
 - Add idempotency keys for placement to handle retry duplicates.
-- Add metrics / tracing.
 - Harden failure handling: dead-letter queue for permanently failing outbox entries and alerting.
 - Add comprehensive test coverage and CI pipeline  to run tests and linter(pre-commit).
 - Add Datadog for observability
 - Introduce integration testing
+- Introduce config so as to not expose the data on the settings file
 
 ## Known gaps
 - Worker is a simple poller for demo not production ready for very high throughput.
