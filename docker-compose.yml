@@ -1,0 +1,62 @@
+version: "3.3"
+services:
+  order_service_db:
+    image: postgres:13.3-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=order_service
+    ports:
+      - 5432:5432
+    volumes:
+      - order_service_db:/var/lib/postgresql/data/
+
+  order_service_test_db:
+    image: postgres:13.3-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=order_service_test
+    ports:
+      - 5433:5432
+    volumes:
+      - order_service_test_db:/var/lib/postgresql/data/
+  order_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - order_service_db
+    environment:
+      - DB_HOST=order_service_db
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_PORT=5432
+      - DB_NAME=order_service
+    ports:
+      - "8054:8000"
+    restart: on-failure
+
+  outbox_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - order_service_db
+    environment:
+      - DB_HOST=order_service_db
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_PORT=5432
+      - DB_NAME=order_service
+    command: ["python", "-m", "app.workers.outbox_worker"]
+    restart: on-failure
+
+volumes:
+  order_service_db:
+    driver: "local"
+    name: "order_service_db"
+
+  order_service_test_db:
+    driver: "local"
+    name: "order_service_test_db"
