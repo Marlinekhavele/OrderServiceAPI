@@ -17,6 +17,12 @@ test: migrate-local
 test-with-coverage: migrate-local
 	poetry run pytest src/tests --cov=src/app --cov-report term-missing:skip-covered --cov-report xml:.test-reports/coverage.xml --junitxml=.test-reports/test-run.xml
 
+test-integration:
+	poetry run pytest src/tests/integration/ -v
+
+test-integration-with-coverage: migrate-local
+    poetry run pytest src/tests/integration/ -v --cov=src/app --cov-report term-missing --cov-report xml:.test-reports/coverage-integration.xml
+
 lint:
 	poetry run pre-commit run --all-files
 

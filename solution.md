@@ -131,6 +131,8 @@ order-service/
     make test migrate-local
 6. Coverage
    make test-with-coverage
+7. Integration
+   make test-integration | make test-integration-with-coverage
    
 Files used:
 - API router & endpoints 
@@ -149,7 +151,6 @@ Files used:
 - Harden failure handling: dead-letter queue for permanently failing outbox entries and alerting.
 - Add comprehensive test coverage and CI pipeline  to run tests and linter(pre-commit).
 - Add Datadog for observability
-- Introduce integration testing
 - Introduce config so as to not expose the data on the settings file
 
 ## Known gaps
