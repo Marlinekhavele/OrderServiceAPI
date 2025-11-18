@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, model_validator
 
 from app.schemas.enums.order import OrderSide, OrderType
 
@@ -12,17 +12,16 @@ class OrderCreate(BaseModel):
     side: OrderSide
     limit_price: Optional[float] = Field(None, gt=0)
 
-    @field_validator("limit_price")
-    @classmethod
-    def validate_limit_price(cls, v, info):
+    @model_validator(mode="after")
+    def validate_limit_price(self):
         """
-        Ensure limit_price is provided for limit orders.
+        Ensure limit_price rules depending on order type.
         """
-        if info.data.get("type") == OrderType.LIMIT and v is None:
+        if self.type == OrderType.LIMIT and self.limit_price is None:
             raise ValueError("limit_price is required for limit orders")
-        if info.data.get("type") == OrderType.MARKET and v is not None:
+        if self.type == OrderType.MARKET and self.limit_price is not None:
             raise ValueError("limit_price should not be provided for market orders")
-        return v
+        return self
 
 
 class OrderResponse(BaseModel):
