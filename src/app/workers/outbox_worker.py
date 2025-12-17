@@ -16,6 +16,7 @@ from app.database.session import SessionLocal
 from app.exceptions import OrderPlacementError
 from app.repositories.order import OrderRepository
 from app.services.order import OrderService
+from app.workers.enums.outbox import OutBoxEntryStatus
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -44,13 +45,17 @@ async def process_outbox():
                             logger.warning(
                                 f"Order {entry.order_id} not found (outbox id={entry.id})"
                             )
-                            await repository.update_outbox_entry(entry.id, "failed")
+                            await repository.update_outbox_entry(
+                                entry.id, OutBoxEntryStatus.FAILED
+                            )
                             continue
 
                         service = OrderService(session)
                         try:
                             await service._place_order_with_retry(order)
-                            await repository.update_outbox_entry(entry.id, "placed")
+                            await repository.update_outbox_entry(
+                                entry.id, OutBoxEntryStatus.PLACED
+                            )
                             logger.info(
                                 f"Successfully placed order {order.id} (outbox id={entry.id})"
                             )
@@ -58,7 +63,9 @@ async def process_outbox():
                             logger.error(
                                 f"Failed to place order {order.id} after retries: {e}"
                             )
-                            await repository.update_outbox_entry(entry.id, "failed")
+                            await repository.update_outbox_entry(
+                                entry.id, OutBoxEntryStatus.FAILED
+                            )
 
                     except Exception as e:
                         logger.error(

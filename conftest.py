@@ -127,9 +127,9 @@ def sample_order_data():
     Sample order data for testing.
     """
     return {
-        "instrument": "AAPL",
-        "type": "LIMIT",
-        "quantity": 100,
-        "side": "BUY",
-        "limit_price": 150.50,
+        "instrument": "DE000A0Q4RZ3",
+        "type": "limit",
+        "quantity": 5,
+        "side": "sell",
+        "limit_price": 125.50,
     }
