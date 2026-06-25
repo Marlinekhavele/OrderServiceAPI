@@ -1,16 +1,13 @@
-# Backend engineering task
 
 ### Intro 
+building the leading European API-first investment platform. We are on a mission to make investing easy, accessible and transparent for everyone.
 
-At lemon.markets 🍋 we are building the leading European API-first investment platform. We are on a mission to make investing easy, accessible and transparent for everyone.
 
 
-The challenge is a simplified version of what we are dealing with at lemon.markets.
+## Problem statement
 
-## Your task
-
-We would like you to develop a simple REST API using Python that allows users to create stock orders so that the following requirements are fulfilled:
-1. A valid request to `POST /orders` must result in the order being stored in a database of your choice.
+A develop a simple REST API using Python that allows users to create stock orders so that the following requirements are fulfilled:
+1. A valid request to `POST /orders` must result in the order being stored in a database.
    * These are the expected fields of an order: 
 
         | Field        | Type    | Description                                                      |
@@ -39,26 +36,12 @@ We would like you to develop a simple REST API using Python that allows users to
 5. The API should be highly scalable and reliable. The reliability of the stock exchange must not impact the reliability of the `POST /orders` endpoint
 
 
-Additionally, please add some tests and document how you would test the application as a whole and its pieces.
-Please provide a Python implementation
 
-Please include a `solution.md` file where you document your decisions, assumptions, and also improvements you would like to incorporate in the future.
-
-We value your time ⏰, so we do not expect you to spend more than 4 hours preparing the solution. 🤗 
-Focus on implementing the main task first and afterwards jump on additional improvements as you see fit.
 
 ### Tech stack
-You are free to use any libraries, frameworks, or technologies you prefer. If you’re interested, here’s a peek at what we usually work with:
+
 * [Python](https://www.python.org/)
 * [FastAPI](https://fastapi.tiangolo.com/)
 * [Docker & docker-compose](https://www.docker.com/)
 
 
-### Bonus tasks
-* Feel free to add a Dockerfile & compose file to run the application and the database.
-
-
-###  Everything process related
-Please create a fork or clone of this repository, commit all of your work to a new branch, and provide us with a link to the solution via mail 📩, at least 6h before the review meeting.
-
-Feel free to use AI tools (e.g. Copilot, ChatGPT, etc.) as you see fit. We are interested in your approach and decision-making, whether you use AI or not.

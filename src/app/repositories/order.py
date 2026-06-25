@@ -19,7 +19,8 @@ class OrderRepository:
     """
 
     def __init__(self, session: AsyncSession):
-        """Initialize the repository with a database session.
+        """
+        Initialize the repository with a database session.
 
         Args:
             session: AsyncSession instance for database operations.
